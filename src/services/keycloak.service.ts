@@ -37,16 +37,18 @@ export class KeycloakService {
   clientId: string;
 
   constructor() {
+    const realm = 'oclif-keycloak'
+
     this.http = axios.create({
-      baseURL: 'http://127.0.0.1:8080',
+      baseURL: `http://127.0.0.1:8080/auth/realms/${realm}/protocol/openid-connect`,
     })
-    this.realm = 'oclif-keycloak'
-    this.clientId = 'oclif-keycloak'
+
+    this.clientId = realm // using the same name by the way
   }
 
   async getDeviceCode(): Promise<GetDeviceCodeResponse> {
     const {data} = await this.http.post(
-      `/auth/realms/${this.realm}/protocol/openid-connect/auth/device`,
+      '/auth/device',
       {
         client_id: this.clientId,
       },
@@ -66,7 +68,7 @@ export class KeycloakService {
     const getToken = () =>
       this.http
       .post(
-        `/auth/realms/${this.realm}/protocol/openid-connect/token`,
+        '/token',
         {
           client_id: this.clientId,
           device_code: deviceCode,
@@ -108,11 +110,35 @@ export class KeycloakService {
     if (!userCredentials?.accessToken) return null
 
     try {
-      const {data} = await this.http.get(
-        `/auth/realms/${this.realm}/protocol/openid-connect/userinfo`,
+      const {data} = await this.http.get('/userinfo', {
+        headers: {
+          Authorization: `Bearer ${userCredentials.accessToken}`,
+        },
+      })
+      return data
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 401)
+        return null
+
+      throw error
+    }
+  }
+
+  async logout(): Promise<void | null> {
+    const userCredentials = getUserCredentials()
+
+    if (!userCredentials?.refreshToken) return null
+
+    try {
+      const {data} = await this.http.post(
+        '/logout',
+        {
+          client_id: this.clientId,
+          refresh_token: userCredentials.refreshToken,
+        },
         {
           headers: {
-            Authorization: `Bearer ${userCredentials.accessToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
         },
       )
