@@ -23,7 +23,7 @@
     "axios": "^1.2.2"
   },
   "devDependencies": {
-    "@oclif/test": "^2.2.16",
+    "@oclif/test": "^2.2.19",
     "@types/axios": "^0.14.0",
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
