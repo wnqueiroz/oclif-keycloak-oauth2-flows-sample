@@ -1,4 +1,5 @@
 import axios, {AxiosError, AxiosInstance} from 'axios'
+import {getUserCredentials} from '../utils'
 
 type GetDeviceCodeResponse = {
   device_code: string;
@@ -20,6 +21,16 @@ type PoolTokenResponse = {
   scope: string;
 };
 
+type GetUserInfoResponse = {
+  sub: string;
+  email_verified: boolean;
+  name: string;
+  preferred_username: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+};
+
 export class KeycloakService {
   http: AxiosInstance;
   realm: string;
@@ -33,9 +44,8 @@ export class KeycloakService {
     this.clientId = 'oclif-keycloak'
   }
 
-  getDeviceCode(): Promise<GetDeviceCodeResponse> {
-    return this.http
-    .post(
+  async getDeviceCode(): Promise<GetDeviceCodeResponse> {
+    const {data} = await this.http.post(
       `/auth/realms/${this.realm}/protocol/openid-connect/auth/device`,
       {
         client_id: this.clientId,
@@ -46,7 +56,7 @@ export class KeycloakService {
         },
       },
     )
-    .then(({data}) => data)
+    return data
   }
 
   async poolToken(
@@ -90,5 +100,28 @@ export class KeycloakService {
     }
 
     return response
+  }
+
+  async getUserInfo(): Promise<GetUserInfoResponse | null> {
+    const userCredentials = getUserCredentials()
+
+    if (!userCredentials?.accessToken) return null
+
+    try {
+      const {data} = await this.http.get(
+        `/auth/realms/${this.realm}/protocol/openid-connect/userinfo`,
+        {
+          headers: {
+            Authorization: `Bearer ${userCredentials.accessToken}`,
+          },
+        },
+      )
+      return data
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 401)
+        return null
+
+      throw error
+    }
   }
 }
