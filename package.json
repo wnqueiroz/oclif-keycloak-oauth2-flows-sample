@@ -19,10 +19,12 @@
   "dependencies": {
     "@oclif/core": "^1.22.0",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.1.9"
+    "@oclif/plugin-plugins": "^2.1.9",
+    "axios": "^1.2.2"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.16",
+    "@types/axios": "^0.14.0",
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.10",

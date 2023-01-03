@@ -2,5 +2,12 @@
   "extends": [
     "oclif",
     "oclif-typescript"
-  ]
+  ],
+  "rules": {
+    "camelcase": "off",
+    "no-unsafe-optional-chaining": "off",
+    "no-constant-condition": "off",
+    "no-await-in-loop": "off",
+    "unicorn/consistent-function-scoping": "off",
+  }
 }
