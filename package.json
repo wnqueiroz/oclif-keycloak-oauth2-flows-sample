@@ -1,15 +1,15 @@
 {
-  "name": "oclif-keycloak-device-auth-sample",
+  "name": "oclif-keycloak-oauth2-flows-sample",
   "version": "0.0.0",
-  "description": "Example of how to implement a device authentication flow in a Command Line Interface (CLI) using oclif and Keycloak!",
+  "description": "Examples of how to implement OAuth 2.0 protocol authentication flows in a Command Line Interface (CLI) using oclif and Keycloak! 🚀",
   "author": "William Queiroz @wnqueiroz",
   "bin": {
     "cli": "./bin/run"
   },
-  "homepage": "https://github.com/wnqueiroz/oclif-keycloak-device-auth-sample",
+  "homepage": "https://github.com/wnqueiroz/oclif-keycloak-oauth2-flows-sample",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "wnqueiroz/oclif-keycloak-device-auth-sample",
+  "repository": "wnqueiroz/oclif-keycloak-oauth2-flows-sample",
   "files": [
     "/bin",
     "/dist",
@@ -60,7 +60,7 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "bugs": "https://github.com/wnqueiroz/oclif-keycloak-device-auth-sample/issues",
+  "bugs": "https://github.com/wnqueiroz/oclif-keycloak-oauth2-flows-sample/issues",
   "keywords": [
     "oclif"
   ],

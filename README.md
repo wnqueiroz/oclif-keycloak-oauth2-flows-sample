@@ -1,8 +1,11 @@
-<h1>oclif-keycloak-device-auth-sample</h1>
+<div align="center">
+<h1>oclif-keycloak-oauth2-flows-sample</h1>
 
-Example of how to implement a device authentication flow in a Command Line Interface (CLI) using oclif and Keycloak! 🚀
+Examples of how to implement OAuth 2.0 protocol authentication flows in a Command Line Interface (CLI) using oclif and Keycloak! 🚀
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+![demo.gif](docs/demo.gif)
+</div>
 
 <!-- toc -->
 * [Usage](#usage)
@@ -11,11 +14,11 @@ Example of how to implement a device authentication flow in a Command Line Inter
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g oclif-keycloak-device-auth-sample
+$ npm install -g oclif-keycloak-oauth2-flows-sample
 $ cli COMMAND
 running command...
 $ cli (--version)
-oclif-keycloak-device-auth-sample/0.0.0 darwin-x64 node-v16.17.1
+oclif-keycloak-oauth2-flows-sample/0.0.0 darwin-x64 node-v16.17.1
 $ cli --help [COMMAND]
 USAGE
   $ cli COMMAND
@@ -35,7 +38,11 @@ Authenticate with Keycloak
 
 ```
 USAGE
-  $ cli auth login
+  $ cli auth login [-f device-code|authorization-code]
+
+FLAGS
+  -f, --flow=<option>  Authentication flow
+                       <options: device-code|authorization-code>
 
 DESCRIPTION
   Authenticate with Keycloak
@@ -83,5 +90,5 @@ DESCRIPTION
   Display help for cli.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.22/src/commands/help.ts)_
 <!-- commandsstop -->

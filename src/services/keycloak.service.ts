@@ -1,5 +1,10 @@
 import axios, {AxiosError, AxiosInstance} from 'axios'
-import {getUserCredentials} from '../utils'
+import * as querystring from 'node:querystring'
+import {
+  CLI_SERVER_ADDRESS_CALLBACK,
+  getUserCredentials,
+  KEYCLOAK_SERVER_ADDRESS,
+} from '../utils'
 
 type GetDeviceCodeResponse = {
   device_code: string;
@@ -10,7 +15,7 @@ type GetDeviceCodeResponse = {
   interval: number;
 };
 
-type PoolTokenResponse = {
+type GetTokenResponse = {
   access_token: string;
   expires_in: number;
   refresh_expires_in: number;
@@ -40,7 +45,7 @@ export class KeycloakService {
     const realm = 'oclif-keycloak'
 
     this.http = axios.create({
-      baseURL: `http://127.0.0.1:8080/auth/realms/${realm}/protocol/openid-connect`,
+      baseURL: `${KEYCLOAK_SERVER_ADDRESS}/auth/realms/${realm}/protocol/openid-connect`,
     })
 
     this.clientId = realm // using the same name by the way
@@ -64,7 +69,7 @@ export class KeycloakService {
   async poolToken(
     deviceCode: string,
     interval: number,
-  ): Promise<PoolTokenResponse> {
+  ): Promise<GetTokenResponse> {
     const getToken = () =>
       this.http
       .post(
@@ -149,5 +154,38 @@ export class KeycloakService {
 
       throw error
     }
+  }
+
+  getAuthorizationCodeURL(codeChallenge: string, state: string): string {
+    const queryParams = querystring.stringify({
+      response_type: 'code',
+      client_id: this.clientId,
+      redirect_uri: CLI_SERVER_ADDRESS_CALLBACK,
+      state,
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256',
+    })
+
+    return `${KEYCLOAK_SERVER_ADDRESS}/auth/realms/${this.clientId}/protocol/openid-connect/auth?${queryParams}`
+  }
+
+  async getAuthorizationCodeToken(code: string, codeVerifier: string): Promise<GetTokenResponse> {
+    return this.http
+    .post(
+      '/token',
+      {
+        client_id: this.clientId,
+        redirect_uri: CLI_SERVER_ADDRESS_CALLBACK,
+        grant_type: 'authorization_code',
+        code,
+        code_verifier: codeVerifier,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
+    )
+    .then(({data}) => data)
   }
 }

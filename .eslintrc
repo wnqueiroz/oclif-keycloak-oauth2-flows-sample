@@ -5,9 +5,10 @@
   ],
   "rules": {
     "camelcase": "off",
-    "no-unsafe-optional-chaining": "off",
-    "no-constant-condition": "off",
     "no-await-in-loop": "off",
-    "unicorn/consistent-function-scoping": "off",
+    "no-constant-condition": "off",
+    "no-unmodified-loop-condition": "off",
+    "no-unsafe-optional-chaining": "off",
+    "unicorn/consistent-function-scoping": "off"
   }
 }
