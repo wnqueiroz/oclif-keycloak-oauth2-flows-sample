@@ -34,7 +34,6 @@ export default class AuthLogin extends Command {
 
       saveUserCredentials({
         accessToken: access_token,
-        deviceCode: device_code,
         refreshToken: refresh_token,
       })
     } catch (error) {

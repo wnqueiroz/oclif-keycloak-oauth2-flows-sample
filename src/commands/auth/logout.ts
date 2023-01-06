@@ -13,7 +13,6 @@ export default class AuthLogout extends Command {
 
     saveUserCredentials({
       accessToken: '',
-      deviceCode: '',
       refreshToken: '',
     })
 

@@ -5,7 +5,6 @@ import * as path from 'node:path'
 const CONFIG_PATH = path.resolve(os.homedir(), '.clirc')
 
 type UserCredentials = {
-  deviceCode: string;
   accessToken: string;
   refreshToken: string;
 };
