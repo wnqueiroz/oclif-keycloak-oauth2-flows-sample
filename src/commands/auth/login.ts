@@ -1,11 +1,11 @@
-import {CliUx, Command, Flags} from '@oclif/core'
+import { CliUx, Command, Flags } from '@oclif/core'
 
-import {CLIError, ExitError} from '@oclif/core/lib/errors'
+import { CLIError, ExitError } from '@oclif/core/lib/errors'
 import EventEmitter = require('node:events');
 import * as http from 'node:http'
 import * as querystring from 'node:querystring'
 
-import {KeycloakService} from '../../services/keycloak.service'
+import { KeycloakService } from '../../services/keycloak.service'
 import {
   CLI_SERVER_ADDRESS,
   CLI_SERVER_ADDRESS_CALLBACK,
@@ -37,7 +37,7 @@ export default class AuthLogin extends Command {
   };
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(AuthLogin)
+    const { flags } = await this.parse(AuthLogin)
 
     try {
       await this.checkUserAlreadyLoggedIn()
@@ -48,15 +48,15 @@ export default class AuthLogin extends Command {
       }
 
       switch (flags.flow) {
-      case 'device-code':
-        userCredentials = await this.startDeviceCodeFlow()
-        break
-      case 'authorization-code':
-        userCredentials = await this.startAuthorizationCodeFlow()
-        break
-      default:
-        userCredentials = await this.startDeviceCodeFlow()
-        break
+        case 'device-code':
+          userCredentials = await this.startDeviceCodeFlow()
+          break
+        case 'authorization-code':
+          userCredentials = await this.startAuthorizationCodeFlow()
+          break
+        default:
+          userCredentials = await this.startDeviceCodeFlow()
+          break
       }
 
       CliUx.ux.action.stop('done ✅')
@@ -95,7 +95,7 @@ export default class AuthLogin extends Command {
   }
 
   private async startDeviceCodeFlow(): Promise<UserCredentials> {
-    const {device_code, interval, verification_uri, user_code} =
+    const { device_code, interval, verification_uri, user_code } =
       await this.keycloakService.getDeviceCode()
 
     this.log(`⚠️  First copy your one-time code: ${user_code}`)
@@ -106,7 +106,7 @@ export default class AuthLogin extends Command {
 
     CliUx.ux.action.start('Waiting for authentication')
 
-    const {access_token, refresh_token} =
+    const { access_token, refresh_token } =
       await this.keycloakService.poolToken(device_code, interval)
 
     return {
@@ -116,7 +116,7 @@ export default class AuthLogin extends Command {
   }
 
   private async startAuthorizationCodeFlow(): Promise<UserCredentials> {
-    const {codeVerifier, codeChallenge, state} = generatePkceChallenge()
+    const { codeVerifier, codeChallenge, state } = generatePkceChallenge()
     const port = CLI_SERVER_ADDRESS.split(':').pop()
     const callbackPath = CLI_SERVER_ADDRESS_CALLBACK.split(':')[2].replace(
       port!,
@@ -132,26 +132,26 @@ export default class AuthLogin extends Command {
     const eventName = 'authorication_code_callback_params'
 
     const server = http
-    .createServer((req, res) => {
-      if (req?.url?.startsWith(callbackPath)) {
-        const params = querystring.decode(
-          req?.url.replace(`${callbackPath}?`, ''),
-        ) as AuthoricationCodeCallbackParams
+      .createServer((req, res) => {
+        if (req?.url?.startsWith(callbackPath)) {
+          const params = querystring.decode(
+            req?.url.replace(`${callbackPath}?`, ''),
+          ) as AuthoricationCodeCallbackParams
 
-        emmiter.emit(eventName, params)
+          emmiter.emit(eventName, params)
 
-        res.end('You can close this browser now.')
+          res.end('You can close this browser now.')
 
-        res.socket?.end()
-        res.socket?.destroy()
-        server.close()
-      } else {
-        // TODO: handle an invalid URL address
-        res.end('Unsupported')
-        emmiter.emit(eventName, new Error('Invalid URL address'))
-      }
-    })
-    .listen(port)
+          res.socket?.end()
+          res.socket?.destroy()
+          server.close()
+        } else {
+          // TODO: handle an invalid URL address
+          res.end('Unsupported')
+          emmiter.emit(eventName, new Error('Invalid URL address'))
+        }
+      })
+      .listen(port)
 
     await CliUx.ux.anykey('Press any key to open Keycloak in your browser')
 
@@ -159,13 +159,13 @@ export default class AuthLogin extends Command {
 
     CliUx.ux.action.start('Waiting for authentication')
 
-    const {code, state: stateFromParams} =
+    const { code, state: stateFromParams } =
       await waitFor<AuthoricationCodeCallbackParams>(eventName, emmiter)
 
     if (stateFromParams !== state)
       throw new Error('Possible CSRF attack. Aborting login! ⚠️')
 
-    const {access_token, refresh_token} =
+    const { access_token, refresh_token } =
       await this.keycloakService.getAuthorizationCodeToken(code, codeVerifier)
 
     return {

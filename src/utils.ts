@@ -32,16 +32,20 @@ export const getUserCredentials = (): UserCredentials | null => {
   }
 }
 
-export const generatePkceChallenge = () => {
+export const generatePkceChallenge = (): {
+  state: string;
+  codeVerifier: string;
+  codeChallenge: string;
+} => {
   const codeVerifier = crypto.randomBytes(64).toString('hex')
 
   const codeChallenge = crypto
-  .createHash('sha256')
-  .update(codeVerifier)
-  .digest('base64')
-  .replace(/\+/g, '-')
-  .replace(/\//g, '_')
-  .replace(/=/g, '')
+    .createHash('sha256')
+    .update(codeVerifier)
+    .digest('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '')
 
   return {
     state: crypto.randomBytes(32).toString('hex'),

@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosInstance} from 'axios'
+import axios, { AxiosError, AxiosInstance } from 'axios'
 import * as querystring from 'node:querystring'
 import {
   CLI_SERVER_ADDRESS_CALLBACK,
@@ -52,7 +52,7 @@ export class KeycloakService {
   }
 
   async getDeviceCode(): Promise<GetDeviceCodeResponse> {
-    const {data} = await this.http.post(
+    const { data } = await this.http.post(
       '/auth/device',
       {
         client_id: this.clientId,
@@ -72,29 +72,29 @@ export class KeycloakService {
   ): Promise<GetTokenResponse> {
     const getToken = () =>
       this.http
-      .post(
-        '/token',
-        {
-          client_id: this.clientId,
-          device_code: deviceCode,
-          grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+        .post(
+          '/token',
+          {
+            client_id: this.clientId,
+            device_code: deviceCode,
+            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
           },
-        },
-      )
-      .then(({data}) => data)
-      .catch(error => {
-        if (error instanceof AxiosError) {
-          const {error: err} = error.response?.data
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          },
+        )
+        .then(({ data }) => data)
+        .catch(error => {
+          if (error instanceof AxiosError) {
+            const { error: err } = error.response?.data
 
-          if (err === 'authorization_pending') return null
-        }
+            if (err === 'authorization_pending') return null
+          }
 
-        throw error
-      })
+          throw error
+        })
 
     let response = await getToken()
 
@@ -115,7 +115,7 @@ export class KeycloakService {
     if (!userCredentials?.accessToken) return null
 
     try {
-      const {data} = await this.http.get('/userinfo', {
+      const { data } = await this.http.get('/userinfo', {
         headers: {
           Authorization: `Bearer ${userCredentials.accessToken}`,
         },
@@ -135,7 +135,7 @@ export class KeycloakService {
     if (!userCredentials?.refreshToken) return null
 
     try {
-      const {data} = await this.http.post(
+      const { data } = await this.http.post(
         '/logout',
         {
           client_id: this.clientId,
@@ -171,21 +171,21 @@ export class KeycloakService {
 
   async getAuthorizationCodeToken(code: string, codeVerifier: string): Promise<GetTokenResponse> {
     return this.http
-    .post(
-      '/token',
-      {
-        client_id: this.clientId,
-        redirect_uri: CLI_SERVER_ADDRESS_CALLBACK,
-        grant_type: 'authorization_code',
-        code,
-        code_verifier: codeVerifier,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+      .post(
+        '/token',
+        {
+          client_id: this.clientId,
+          redirect_uri: CLI_SERVER_ADDRESS_CALLBACK,
+          grant_type: 'authorization_code',
+          code,
+          code_verifier: codeVerifier,
         },
-      },
-    )
-    .then(({data}) => data)
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
+      .then(({ data }) => data)
   }
 }

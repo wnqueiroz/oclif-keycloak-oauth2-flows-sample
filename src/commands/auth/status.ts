@@ -1,6 +1,6 @@
-import {Command} from '@oclif/core'
+import { Command } from '@oclif/core'
 
-import {KeycloakService} from '../../services/keycloak.service'
+import { KeycloakService } from '../../services/keycloak.service'
 
 export default class AuthStatus extends Command {
   static description = 'View authentication status';

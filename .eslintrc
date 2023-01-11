@@ -9,6 +9,17 @@
     "no-constant-condition": "off",
     "no-unmodified-loop-condition": "off",
     "no-unsafe-optional-chaining": "off",
-    "unicorn/consistent-function-scoping": "off"
+    "unicorn/consistent-function-scoping": "off",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ]
   }
 }
