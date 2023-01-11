@@ -2,6 +2,7 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import * as crypto from 'node:crypto'
+import EventEmitter = require('node:events');
 
 const CONFIG_PATH = path.resolve(os.homedir(), '.clirc')
 export const CLI_SERVER_ADDRESS = 'http://127.0.0.1:5657'
@@ -47,4 +48,21 @@ export const generatePkceChallenge = () => {
     codeVerifier,
     codeChallenge,
   }
+}
+
+export const waitFor = <T>(
+  eventName: string,
+  emitter: EventEmitter,
+): Promise<T> => {
+  const promise = new Promise<T>((resolve, reject) => {
+    const handleEvent = (eventData: any): void => {
+      eventData instanceof Error ? reject(eventData) : resolve(eventData)
+
+      emitter.removeListener(eventName, handleEvent)
+    }
+
+    emitter.addListener(eventName, handleEvent)
+  })
+
+  return promise
 }

@@ -1,6 +1,7 @@
 import {CliUx, Command, Flags} from '@oclif/core'
 
 import {CLIError, ExitError} from '@oclif/core/lib/errors'
+import EventEmitter = require('node:events');
 import * as http from 'node:http'
 import * as querystring from 'node:querystring'
 
@@ -12,6 +13,7 @@ import {
   getUserCredentials,
   saveUserCredentials,
   UserCredentials,
+  waitFor,
 } from '../../utils'
 
 type AuthoricationCodeCallbackParams = {
@@ -126,7 +128,8 @@ export default class AuthLogin extends Command {
       state,
     )
 
-    let authoricationCodeCallbackParams
+    const emmiter = new EventEmitter()
+    const eventName = 'authorication_code_callback_params'
 
     const server = http
     .createServer((req, res) => {
@@ -135,7 +138,7 @@ export default class AuthLogin extends Command {
           req?.url.replace(`${callbackPath}?`, ''),
         ) as AuthoricationCodeCallbackParams
 
-        authoricationCodeCallbackParams = params
+        emmiter.emit(eventName, params)
 
         res.end('You can close this browser now.')
 
@@ -145,6 +148,7 @@ export default class AuthLogin extends Command {
       } else {
         // TODO: handle an invalid URL address
         res.end('Unsupported')
+        emmiter.emit(eventName, new Error('Invalid URL address'))
       }
     })
     .listen(port)
@@ -155,16 +159,11 @@ export default class AuthLogin extends Command {
 
     CliUx.ux.action.start('Waiting for authentication')
 
-    while (authoricationCodeCallbackParams === undefined) {
-      await new Promise(resolve => {
-        setTimeout(resolve, 100)
-      })
-    }
-
     const {code, state: stateFromParams} =
-      authoricationCodeCallbackParams as AuthoricationCodeCallbackParams
+      await waitFor<AuthoricationCodeCallbackParams>(eventName, emmiter)
 
-    if (stateFromParams !== state) throw new Error('Possible CSRF attack. Aborting login! ⚠️')
+    if (stateFromParams !== state)
+      throw new Error('Possible CSRF attack. Aborting login! ⚠️')
 
     const {access_token, refresh_token} =
       await this.keycloakService.getAuthorizationCodeToken(code, codeVerifier)
