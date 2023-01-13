@@ -1,7 +1,7 @@
 {
   "name": "oclif-keycloak-oauth2-flows-sample",
   "version": "0.0.0",
-  "description": "Examples of how to implement OAuth 2.0 protocol authentication flows in a Command Line Interface (CLI) using oclif and Keycloak! 🚀",
+  "description": "Real-world example of how to implement OAuth 2.0 protocol authentication flows in a Command Line Interface (CLI) using oclif.io and Keycloak! 🚀",
   "author": "William Queiroz @wnqueiroz",
   "bin": {
     "cli": "./bin/run"
@@ -39,7 +39,7 @@
     "typescript": "^4.9.4"
   },
   "oclif": {
-    "bin": "cli",
+    "bin": "./bin/run",
     "dirname": "cli",
     "commands": "./dist/commands",
     "plugins": [
